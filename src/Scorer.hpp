@@ -8,11 +8,10 @@
 
 
 class Scorer {
-private:
-    std::array<int, 7> countValues(const std::vector<int>& diceValues);
 public:
-    int calculateScore(const std::vector<int>& diceValues);
-    bool hasScoringMove(const std::vector<int>& activeDiceValues);
+    static std::array<int, 7> countValues(const std::vector<int>& diceValues);
+    static int calculateScore(const std::vector<int>& diceValues);
+    static bool hasScoringMove(const std::vector<int>& activeDiceValues);
 };
 
 
