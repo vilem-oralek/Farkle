@@ -8,8 +8,7 @@
 Dice::Dice() : value(1) {}
 
 void Dice::roll(std::mt19937& rng) {
-    std::uniform_int_distribution<int> dist(1, 6);
-    value = dist(rng);
+    value = static_cast<int>(rng() % 6) + 1;
 }
 
 int Dice::getValue() const {
@@ -17,7 +16,7 @@ int Dice::getValue() const {
 }
 
 void Dice::setValue(int v) {
-    if (v < 1 || v > 6) throw std::invalid_argument("invalid value for Dice");
+    if (v < 1 || v > 6) throw std::invalid_argument("nevalidní hodnota kostky");
     value = v;
 }
 

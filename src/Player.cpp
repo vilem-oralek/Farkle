@@ -3,8 +3,13 @@
 //
 
 #include "Player.hpp"
+#include <stdexcept>
 
-Player::Player(const std::string& name) : playerName(name) {}
+Player::Player(const std::string& name) : playerName(name) {
+    if (name.empty() || name.length() > MAX_NAME_LENGTH) {
+        throw std::invalid_argument("Jméno hráče musí mít 1 až " + std::to_string(MAX_NAME_LENGTH) + " znaků.");
+    }
+}
 
 void Player::setName(const std::string& name) {
     playerName = name;

@@ -9,7 +9,7 @@ std::array<int, 7> Scorer::countValues(const std::vector<int>& diceValues) {
     std::array<int, 7> result = {0};
     for (int i = 0; i < diceValues.size(); i++) {
         if (diceValues[i] < 1 || diceValues[i] > 6) {
-            throw std::invalid_argument("invalid value for Dice");
+            throw std::invalid_argument("nevalidní hodnota kostky");
         }
         result[diceValues[i]]++;
     }
@@ -17,7 +17,7 @@ std::array<int, 7> Scorer::countValues(const std::vector<int>& diceValues) {
 }
 
 int Scorer::calculateScore(const std::vector<int>& diceValues) {
-    if (diceValues.size() == 0) return -1;
+    if (diceValues.empty()) return -1;
     std::array<int, 7> counts = countValues(diceValues);
     int score = 0;
 

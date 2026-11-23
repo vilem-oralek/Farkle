@@ -10,7 +10,7 @@
 
 HumanPlayer::HumanPlayer(const std::string& name) : Player(name) {}
 
-std::vector<int> HumanPlayer::chooseDice(const std::vector<Dice>& dice) {
+std::vector<int> HumanPlayer::chooseDice(const std::vector<Dice>&) {
     std::vector<int> diceNumbers;
     std::string line;
     int x;
@@ -24,15 +24,19 @@ std::vector<int> HumanPlayer::chooseDice(const std::vector<Dice>& dice) {
 }
 
 bool HumanPlayer::wantsToRollAgain(int turnScore, int remainingDiceCount) {
-    std::string response;
+    char response;
     while (true) {
         if (remainingDiceCount == 0) remainingDiceCount = 6;
         std::cout << "Aktuální body v tahu: " << turnScore
                   << " | Volných kostek: " << remainingDiceCount
                   << ". Chceš házet znovu (h), nebo uložit skóre (s)? ";
-        std::getline(std::cin, response);
-        if (response == "h" || response == "H") return true;
-        if (response == "s" || response == "S") return false;
-        std::cout << "Neplatna volba, zadej 'h' nebo 's'.\n";
+
+        std::cin >> response;
+        if (!std::cin) return false;
+        std::cin.ignore(10000, '\n');
+
+        if (response == 'h' || response == 'H') return true;
+        if (response == 's' || response == 'S') return false;
+        std::cout << "Neplatná volba, zadej 'h' nebo 's'.\n";
     }
 }

@@ -37,6 +37,7 @@ private:
 
 public:
     Game();
+    explicit Game(unsigned int seed);
 
     void addPlayer(std::unique_ptr<Player> player);
     void run();

@@ -7,8 +7,12 @@
 #include <string>
 #include <vector>
 #include "Dice.hpp"
+#include <cstddef>
+
 
 class Player {
+public:
+    static constexpr size_t MAX_NAME_LENGTH = 20;
 private:
     std::string playerName;
     bool onBoard = false;

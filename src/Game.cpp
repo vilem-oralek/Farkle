@@ -9,7 +9,8 @@
 #include "Scorer.hpp"
 #include <array>
 
-Game::Game() : rng(std::random_device{}()), dice(DICE_COUNT) {}
+Game::Game() : dice(DICE_COUNT), rng(std::random_device{}()) {}
+Game::Game(unsigned int seed) : dice(DICE_COUNT), rng(seed) {}
 
 void Game::rollUnlockedDice() {
     for (int i = 0; i < DICE_COUNT; i++) {
@@ -82,18 +83,34 @@ void Game::printScoreboard() const {
 
 void Game::announceWinner() const {
     std::cout << std::endl;
-    int highest_score = 0;
+    int highestScore = 0;
+    int numberOfWinners = 0;
+    std::vector<std::string> winners{};
     for (int i = 0; i < players.size(); i++) {
-        if (players[i]->getTotalScore() > highest_score) {
-            highest_score = players[i]->getTotalScore();
+        if (players[i]->getTotalScore() > highestScore) {
+            highestScore = players[i]->getTotalScore();
+            numberOfWinners = 0;
+        }
+        if (players[i]->getTotalScore() == highestScore) {
+            numberOfWinners++;
         }
     }
     for (int i = 0; i < players.size(); i++) {
-        if (players[i]->getTotalScore() == highest_score) {
-            std::cout <<"Hráč "<< players[i]->getName() << " zvítězil se skórem: "
-            << players[i]->getTotalScore() << "." << std::endl;
+        if (players[i]->getTotalScore() == highestScore) {
+            if (numberOfWinners == 1) {
+                std::cout <<"Hráč "<< players[i]->getName() << " zvítězil se skórem: "
+                << players[i]->getTotalScore() << "." << std::endl;
+                return;
+            }
+            winners.push_back(players[i]->getName());
         }
     }
+
+    std::cout <<"Hráči: ";
+    for (int i = 0; i < winners.size(); i++) {
+        std::cout << winners[i] << (i + 1 < winners.size() ? ", " : "");
+    }
+    std::cout << " remízovali se skórem: " << highestScore << "." << std::endl;
 }
 
 void Game::playTurn(Player& player) {
@@ -119,6 +136,7 @@ void Game::playTurn(Player& player) {
         }
         while (true) {
             chosenDice = player.chooseDice(dice);
+            if (!std::cin) return;
             if (isValidSelection(chosenDice)) break;
             std::cout << "Neplatný výběr kostek, zkus to znovu." << std::endl;
         }
@@ -130,7 +148,7 @@ void Game::playTurn(Player& player) {
         turnScore += rollScore;
 
         if (countUnlockedDice() == 0) {
-            std::cout << std::endl << "HORKÉ KOSTKY!!! Všechny kostky bodovaly, můžeš házet znovu se všemi." << std::endl;
+            std::cout << std::endl << "HORKÉ KOSTKY!!! Všechny kostky bodovaly a může házet znovu se všemi." << std::endl;
         }
 
         std::cout << "Hráč " << player.getName() << " v tomto hodu uhrál "
@@ -140,13 +158,13 @@ void Game::playTurn(Player& player) {
     while (player.wantsToRollAgain(turnScore,countUnlockedDice()));
 
     if (player.isOnBoard()) {
-        player.setTotalScore(player.getTotalScore() + turnScore);
+        player.addScore(turnScore);
         std::cout << std::endl << "Hráč " << player.getName() << " si přičítá "
         << turnScore << " bodů." << std::endl;
     }
     else if (!player.isOnBoard() && turnScore >= ON_BOARD_THRESHOLD) {
         player.setOnBoard(true);
-        player.setTotalScore(player.getTotalScore() + turnScore);
+        player.addScore(turnScore);
         std::cout << std::endl << "Hráč " << player.getName() << " splnil vstupní limit a přičítá si "
         << turnScore << " bodů." << std::endl;
     }
@@ -176,6 +194,7 @@ void Game::run() {
                 break;
             }
             playTurn(*players[i]);
+            if (!std::cin) return;
             if (lastRound) continue;
             if (players[i]->getTotalScore() >= WINNING_SCORE) {
                 lastRound = true;
@@ -184,7 +203,9 @@ void Game::run() {
                 << " bodů. Ostatní hráči odehrají poslední kolo." << std::endl;
             }
         }
-        if (!end) printScoreboard();
+        if (!end && !(lastRound && triggerIndex == 0)) printScoreboard();
     }
+    std::cout << "\n=== KONEC HRY ===\n";
+    printScoreboard();
     announceWinner();
 }

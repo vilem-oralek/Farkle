@@ -5,7 +5,7 @@
 #ifndef FARKLE_SCORER_HPP
 #define FARKLE_SCORER_HPP
 #include <vector>
-
+#include <array>
 
 class Scorer {
 public:

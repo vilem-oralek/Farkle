@@ -1,13 +1,28 @@
 #include <iostream>
 #include <string>
+#include <exception>
 
 #include "src/Game.hpp"
 #include "src/AIPlayer.hpp"
 #include "src/HumanPlayer.hpp"
 
 
-void printHelp() {
-    std::cout << "\n=== PRAVIDLA HRY FARKLE ===\n"
+static void printHelp() {
+    std::cout << "\n=== MOŽNOSTI ===\n"
+              << "  -h, --help    Zobrazí tuto nápovědu, ovládání a pravidla hry\n"
+              << "  --seed <N>    Nastaví počáteční seed generátoru náhodných čísel\n"
+              << "                (pro reprodukovatelné testování průběhu hry)\n\n"
+              << "=== OVLÁDÁNÍ HRY ===\n"
+              << "1. NASTAVENÍ HRÁČŮ PŘED HROU:\n"
+              << "   - Přidání hráče : zadejte 'a' (ano) nebo 'n' (ne, min. 2 hráči) + Enter\n"
+              << "   - Typ hráče     : zadejte 'c' (člověk) nebo 'a' (AI) + Enter\n"
+              << "   - Obtížnost AI  : '1' = opatrný, '2' = vyvážený, '3' = riskující\n\n"
+              << "2. OVLÁDÁNÍ BĚHEM TAHU:\n"
+              << "   - Výběr kostek  : zadejte čísla kostek (1 až 6) oddělená mezerou a potvrďte Enterem\n"
+              << "                     (např. '1 5' pro odložení jedničky a pětky)\n"
+              << "   - Další akce    : zadejte 'h' (házet znovu se zbývajícími kostkami)\n"
+              << "                     nebo 's' (stát a uložit nahrané body z kola)\n\n"
+              << "\n=== PRAVIDLA HRY FARKLE ===\n"
               << "1. PRŮBĚH TAHU:\n"
               << "   - Hráč na začátku tahu hází všemi " << Game::DICE_COUNT << " kostkami.\n"
               << "   - Po každém hodu musí hráč odložit (uzamknout) alespoň jednu bodovanou kombinaci.\n"
@@ -39,15 +54,31 @@ void printHelp() {
 
 int main(int argc, char* argv[]) {
 
+    bool useSeed = false;
+    unsigned int seed = 0;
+
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--help" || arg == "-h") {
             printHelp();
             return 0;
         }
+        if (arg == "--seed") {
+            if (i + 1 >= argc) {
+                std::cout << "Chyba: Přepínač --seed vyžaduje číselnou hodnotu.\n";
+                return 1;
+            }
+            try {
+                seed = static_cast<unsigned int>(std::stoul(argv[++i]));
+                useSeed = true;
+            } catch (const std::exception&) {
+                std::cout << "Chyba: Neplatná hodnota pro --seed (zadejte nezáporné celé číslo).\n";
+                return 1;
+            }
+        }
     }
 
-    Game game;
+    Game game = useSeed ? Game(seed) : Game();
 
     char response = 'a';
     int playerCount = 0;
@@ -55,32 +86,68 @@ int main(int argc, char* argv[]) {
     while (true) {
         std::cout << "Přejete si přidat nového hráče? (a/n)" << std::endl;
         std:: cin >> response;
+        if (!std::cin) {
+            std::cout << "\nKonec vstupu, ukončuji program.\n";
+            return 0;
+        }
+        std::cin.ignore(10000, '\n');
         if (response == 'a' || response == 'A') {
 
             char type;
             std::string name;
 
-            std::cout << "Zadejte jméno hráče" << std::endl;
-            std::getline(std::cin >> std::ws, name);
-
-            std::cout << "Je to člověk nebo AI? (c/a): ";
-            std::cin >> type;
-
-            if (type == 'a' || type == 'A') {
-                char difficulty = '2';
-                std::cout << "Obtížnost AI (1 = opatrný, 2 = vyvážený, 3 = riskující): ";
-                std::cin >> difficulty;
-
-                if (difficulty == '1') {
-                    game.addPlayer(std::make_unique<AIPlayer>(name, 300, 3));
-                } else if (difficulty == '3') {
-                    game.addPlayer(std::make_unique<AIPlayer>(name, 1000, 2));
-                } else {
-                    game.addPlayer(std::make_unique<AIPlayer>(name, 500, 2));
-                    std::cout << "Neplatná volba, automaticky zvolena obtížnost 2 (vyvážený)." << std::endl;
+            while (true) {
+                std::cout << "Zadejte jméno hráče (max " << Player::MAX_NAME_LENGTH << " znaků): ";
+                std::getline(std::cin >> std::ws, name);
+                if (!std::cin) {
+                    std::cout << "\nKonec vstupu, ukončuji program.\n";
+                    return 0;
                 }
-            } else game.addPlayer(std::make_unique<HumanPlayer>(name));
-            playerCount++;
+
+                if (!name.empty() && name.length() <= Player::MAX_NAME_LENGTH) {
+                    break;
+                }
+                std::cout << "Neplatná délka jména, zkuste to znovu." << std::endl;
+            }
+            while (true) {
+                std::cout << "Je to člověk nebo AI? (c/a): ";
+                std::cin >> type;
+                if (!std::cin) {
+                    std::cout << "\nKonec vstupu, ukončuji program.\n";
+                    return 0;
+                }
+                std::cin.ignore(10000, '\n');
+
+                if (type == 'a' || type == 'A') {
+                    char difficulty = '2';
+                    std::cout << "Obtížnost AI (1 = opatrný, 2 = vyvážený, 3 = riskující): ";
+                    std::cin >> difficulty;
+                    if (!std::cin) {
+                        std::cout << "\nKonec vstupu, ukončuji program.\n";
+                        return 0;
+                    }
+                    std::cin.ignore(10000, '\n');
+
+                    if (difficulty == '1') {
+                        game.addPlayer(std::make_unique<AIPlayer>(name, 400, 4)); //13% FRAKLE na tah
+                    } else if (difficulty == '2') {
+                        game.addPlayer(std::make_unique<AIPlayer>(name, 500, 3)); //23% FRAKLE na tah
+                    } else if (difficulty == '3') {
+                        game.addPlayer(std::make_unique<AIPlayer>(name, 500, 2)); //38% FRAKLE na tah
+                    } else {
+                        game.addPlayer(std::make_unique<AIPlayer>(name, 500, 3));
+                        std::cout << "Neplatná volba, automaticky zvolena obtížnost 2 (vyvážený)." << std::endl;
+                    }
+                    playerCount++;
+                    break;
+                }
+                if (type == 'c' || type == 'C') {
+                    game.addPlayer(std::make_unique<HumanPlayer>(name));
+                    playerCount++;
+                    break;
+                }
+                std::cout << "Neplatná volba, zkus znovu." << std::endl;
+            }
         }
         else if (response == 'n' || response == 'N') {
             if (playerCount < 2) {
