@@ -20,6 +20,9 @@ std::vector<int> HumanPlayer::chooseDice(const std::vector<Dice>&) {
     while (ss >> x) {
         diceNumbers.push_back(x-1);
     }
+    ss.clear();
+    ss >> std::ws;
+    if (!ss.eof()) return {};
     return diceNumbers;
 }
 

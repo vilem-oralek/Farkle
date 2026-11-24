@@ -11,10 +11,6 @@ Player::Player(const std::string& name) : playerName(name) {
     }
 }
 
-void Player::setName(const std::string& name) {
-    playerName = name;
-}
-
 std::string Player::getName() const {
     return playerName;
 }

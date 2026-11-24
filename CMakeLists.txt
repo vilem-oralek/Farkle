@@ -1,7 +1,10 @@
-cmake_minimum_required(VERSION 4.3)
+cmake_minimum_required(VERSION 3.10)
+
 project(Farkle)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(Farkle main.cpp
         src/Dice.cpp
@@ -16,4 +19,14 @@ add_executable(Farkle main.cpp
         src/AIPlayer.hpp
         src/Game.cpp
         src/Game.hpp
+)
+
+add_executable(farkle_tests
+        tests/catch.cpp
+        tests/test_farkle.cpp
+        src/Dice.cpp
+        src/Scorer.cpp
+        src/Player.cpp
+        src/HumanPlayer.cpp
+        src/AIPlayer.cpp
 )

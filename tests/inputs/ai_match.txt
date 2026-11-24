@@ -1,0 +1,9 @@
+a
+BotOpatrny
+a
+1
+a
+BotRiskujici
+a
+3
+n

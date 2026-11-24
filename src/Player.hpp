@@ -20,7 +20,6 @@ private:
 public:
     explicit Player(const std::string& name);
     virtual ~Player() = default;
-    void setName(const std::string& name);
     std::string getName() const;
     void setOnBoard(bool b);
     bool isOnBoard() const;

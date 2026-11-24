@@ -194,7 +194,10 @@ void Game::run() {
                 break;
             }
             playTurn(*players[i]);
-            if (!std::cin) return;
+            if (!std::cin) {
+                std::cout << "\nKonec vstupu, ukončuji program.\n";
+                return;
+            }
             if (lastRound) continue;
             if (players[i]->getTotalScore() >= WINNING_SCORE) {
                 lastRound = true;
