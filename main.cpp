@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
                 seed = static_cast<unsigned int>(std::stoul(argv[++i]));
                 useSeed = true;
             } catch (const std::exception&) {
-                std::cout << "Chyba: Neplatná hodnota pro --seed (zadejte nezáporné celé číslo).\n";
+                std::cout << "Chyba: Neplatná hodnota pro --seed (zadejte celé číslo).\n";
                 return 1;
             }
         }
