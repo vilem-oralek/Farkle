@@ -86,7 +86,7 @@ Remíza nastane jen při **přesně shodném** celkovém skóre po posledním ko
 - Zůstat **těsně pod hranicí 10 000 bodů** a v dalších tazích raději házet až do Farkle, než hranici překročit. Poslední kolo pak spustí soupeř a hráč má **poslední tah** s přesnou znalostí cílového skóre.
 - Jakmile soupeř hranici 10 000 přeskočí, snažit se jeho skóre **vyrovnat**: hráč tah uloží přesně ve chvíli, kdy se jeho součet rovná soupeřovu skóre.
 - Počítačoví hráči tuto taktiku nepoužívají: ukládají podle pevných pravidel a hranici 10 000 překročí, jakmile na ni dosáhnou.
-- Pokud tutu taktiku používají oba hráči, hra se může protahovat, protože pravidla neomezují počet kol.
+- Pokud tuto taktiku používají oba hráči, hra se může protahovat, protože pravidla neomezují počet kol.
 
 ### 1.3 Strategie počítačových hráčů a vyvážení obtížností (simulace)
 
@@ -111,7 +111,7 @@ Remíza nastane jen při **přesně shodném** celkovém skóre po posledním ko
 
 #### Jak byly hodnoty zvoleny
 
-Hodnoty nebyly odhadnuty, ale **změřeny simulacemi**. Asistent Claude (viz kapitola 8) na žádost autora odsimuloval celkem **přibližně 1,9 milionu partií AI proti AI** (průzkumná fáze asi 1,1 milionu partií a finální reprodukovatelná série 800 000 partií). Ve finální sérii hrály dvě AI proti sobě a v partiích se střídalo, kdo začíná. Každá partie měla vlastní seed, takže výsledky jdou přesně zopakovat. Nástroj `tools/simulate_ai.cpp` pracuje jen s veřejným rozhraním tříd `Game` a `AIPlayer` a není součástí překladu hry.
+Hodnoty nebyly odhadnuty, ale **změřeny simulacemi**. Asistent Claude (viz kapitola 8) na žádost autora odsimuloval celkem **přibližně 1,9 milionu partií AI proti AI** (průzkumná fáze asi 1,1 milionu partií a finální reprodukovatelná série 800 000 partií). Ve finální sérii hrály dvě AI proti sobě a v partiích se střídalo, kdo začíná. Každá partie měla vlastní seed, takže výsledky jdou přesně zopakovat.
 
 **Měření 1: mřížka 55 konfigurací.** Každá kombinace `bankThreshold` ∈ {250, 300, 350, 400, 450, 500, 600, 750, 1000, 1500, 2500} a `minDiceToReroll` ∈ {1, 2, 3, 4, 5} hrála proti všem ostatním (1 485 dvojic × 200 partií = 297 000 partií). Průměrná úspěšnost podle `minDiceToReroll`:
 
@@ -144,14 +144,6 @@ Statistická chyba je u 100 000 partií asi ±0,3 procentního bodu, u mřížky
 | „opatrný“ (300, 3) | 21,9 % Farkle na tah, tedy stejné riziko jako „vyvážený“ (23,0 %); mezi sebou hrají vyrovnaně (50,1 : 49,3). Název neodpovídal chování. |
 | „vyvážený“ (500, 2) | 38,2 % Farkle na tah, ve skutečnosti riskující hra. |
 | „riskující“ (1000, 2) | 45,5 % Farkle na tah, proti finálnímu „vyváženému“ jen 40,4 : 59,2; v mřížce 35. místo z 55. Příliš slabý. |
-
-**Reprodukce měření:**
-
-```bash
-g++ -std=c++14 -O2 tools/simulate_ai.cpp src/Game.cpp src/Dice.cpp src/Player.cpp src/AIPlayer.cpp src/HumanPlayer.cpp src/Scorer.cpp -o simulate_ai
-./simulate_ai pair 400 4 500 3 100000 1     # opatrný vs vyvážený
-./simulate_ai grid 200 1                    # celá mřížka, trvá asi 90 s
-```
 
 ---
 
@@ -188,12 +180,11 @@ Farkle/
 │   ├── HumanPlayer.hpp/.cpp  člověk
 │   ├── AIPlayer.hpp/.cpp     počítač
 │   └── Game.hpp/.cpp         herní smyčka
-├── tests/
-│   ├── test_farkle.cpp       jednotkové testy
-│   ├── catch.hpp, catch.cpp  Catch2 v3.4.0
-│   └── inputs/               vzorové vstupy pro scénáře s přesměrovaným vstupem
-└── tools/
-    └── simulate_ai.cpp       simulace AI (není součástí CMake)
+└── tests/
+    ├── test_farkle.cpp       jednotkové testy
+    ├── catch.hpp, catch.cpp  Catch2 v2.13.10
+    └── inputs/               vzorové vstupy pro scénáře s přesměrovaným vstupem
+
 ```
 
 ### 2.3 Diagram tříd
@@ -312,7 +303,7 @@ opakuj:
 dokud hráč.wantsToRollAgain(turnScore, počet volných kostek)
 
 pokud je hráč ve hře:                  skóre += turnScore
-jinak pokud turnScore >= 500:             hráč splňil vstupní limit a je tímto ve hře, skóre += turnScore
+jinak pokud turnScore >= 500:             hráč splnil vstupní limit a je tímto ve hře, skóre += turnScore
 jinak:                                    hráč získává 0 bodů
 odemkni všechny kostky
 ```
@@ -611,7 +602,7 @@ Scénář zároveň ukazuje **Farkle** u počítačového hráče: `Bot` odlož�
 | Scénář | Kde je pokrytý |
 |---|---|
 | **Výhra** | I-1 (vyhrává `BotRiskujici`), ruční test tří hráčů (vyhrává B) |
-| **Prohra** | I-1 (`BotOpatrny` prohrává se 5 300 body); |
+| **Prohra** | I-1 (`BotOpatrny` prohrává se 5 300 body) |
 | **Remíza** | I-2 (10 250 : 10 250) |
 | **Farkle** | I-1, I-2 a I-4 |
 | **Horké kostky** | I-1 (6×) a I-2 (3×) |
@@ -652,7 +643,7 @@ Díky polymorfismu (`Player*`) je vyhodnocení konce hry pro člověka i počít
 ### 8.1 Zdroje
 
 1. Zadání semestrální práce. BRUTE, ČVUT FEL, 2026.
-2. **Catch2** v3.4.0 – testovací framework pro C++. <https://github.com/catchorg/Catch2>
+2. **Catch2** v2.13.10 – testovací framework pro C++. <https://github.com/catchorg/Catch2/releases/tag/v2.13.10>
 3. **YouTube** Návod ke hře Farkle pro pochopení průběhu hry a pravidel. <https://www.youtube.com/watch?v=z5hVT2Alt-0>
 4. **Gemini** (Google), model **Gemini Hydrogen 4**, <https://gemini.google.com> – AI asistent, viz kapitola 8.2.
 5. **Claude** (Anthropic), model **Claude Sonnet 5.5**, <https://claude.ai> – AI asistent, viz kapitola 8.2.
@@ -665,7 +656,7 @@ Práce vznikla ve spolupráci s AI asistenty, kteří sloužili jako konzultanti
 
 | Nástroj | K čemu byl použit |
 |---|---|
-| **Gemini** (Google) | **Návrh architektury:** konzultace rozdělení odpovědností mezi třídy (`Scorer` jako bezstavový vyhodnocovač, `Game` jako správce herní smyčky) a využití polymorfismu přes `std::unique_ptr<Player>`. **Okrajové případy vstupu:** návrh robustního parsování řádku v `HumanPlayer::chooseDice` pomocí `std::stringstream` (včetně `ss.clear(); ss >> std::ws; if (!ss.eof()) return {};`) a bezpečného ukončení smyček při konci vstupu. **Testovací strategie:** struktura jednotkových testů v Catch2, příprava scénářů s přesměrovaným vstupem a jednorázový vyhledávací cyklus pro nalezení seedu remízy (kapitola 6.2). **Přenositelnost:** úprava `CMakeLists.txt` (`cmake_minimum_required` 3.10, C++14 bez rozšíření kompilátoru) a sjednocení názvů binárek. |
-| **Claude** (Anthropic), model Claude Sonnet 5.5 | **Revize kódu a testů:** nalezení chybějícího `#include <array>` v `Scorer.hpp`, zacyklení při konci vstupu, chyba v kódu `if (!std::cin)` v `main.cpp`, tichého částečného přijetí vstupu typu `1,4`, přenositelnosti seedu (náhrada `std::uniform_int_distribution` za `rng() % 6`) a příliš přísného `cmake_minimum_required`. **Simulace AI:** změření a vyvážení tří úrovní obtížnosti (kapitola 1.3) včetně nástroje `tools/simulate_ai.cpp`. **Dokumentace:** pomoc při tvorbě tohoto dokumentu (syntaxe, struktura, tabulky, diagram tříd) a ověření všech v něm uvedených příkazů a výstupů spuštěním programu. |
+| **Gemini** (Google), model Gemini Hydrogen 4 | **Návrh architektury:** konzultace rozdělení odpovědností mezi třídy (`Scorer` jako bezstavový vyhodnocovač, `Game` jako správce herní smyčky) a využití polymorfismu přes `std::unique_ptr<Player>`. **Okrajové případy vstupu:** návrh robustního parsování řádku v `HumanPlayer::chooseDice` pomocí `std::stringstream` (včetně `ss.clear(); ss >> std::ws; if (!ss.eof()) return {};`) a bezpečného ukončení smyček při konci vstupu. **Testovací strategie:** struktura jednotkových testů v Catch2, příprava scénářů s přesměrovaným vstupem a jednorázový vyhledávací cyklus pro nalezení seedu remízy (kapitola 6.2). **Přenositelnost:** úprava `CMakeLists.txt` (`cmake_minimum_required` 3.10, C++14 bez rozšíření kompilátoru) a sjednocení názvů binárek. |
+| **Claude** (Anthropic), model Claude Sonnet 5.5 | **Revize kódu a testů:** nalezení chybějícího `#include <array>` v `Scorer.hpp`, zacyklení při konci vstupu, chyba v kódu `if (!std::cin)` v `main.cpp`, tichého částečného přijetí vstupu typu `1,4`, přenositelnosti seedu (náhrada `std::uniform_int_distribution` za `rng() % 6`) a příliš přísného `cmake_minimum_required`. **Simulace AI:** změření a vyvážení tří úrovní obtížnosti (kapitola 1.3). **Dokumentace:** pomoc při tvorbě tohoto dokumentu (syntaxe, struktura, tabulky, diagram tříd) a ověření všech v něm uvedených příkazů a výstupů spuštěním programu. |
 
 Tabulku v podkapitole 8.2 si každý model vytvořil samostatně, aby se předešlo neúmyslnému vynechání částí vypracovaných asistenty. Autor odpovídá za veškerý obsah práce a je schopen jej vysvětlit.
