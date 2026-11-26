@@ -628,13 +628,23 @@ Díky polymorfismu (`Player*`) je vyhodnocení konce hry pro člověka i počít
 
 | Čas | Scénář |
 |---|---|
-| | |
+| 0:00 - 0:05 | Představení autora a projektu |
+| 0:05 - 0:12 | Ukázka souboru CMakeLists.txt |
+| 0:12 - 0:25 | Příprava adresáře a konfigurace CMake |
+| 0:25 - 0:41 | Spuštění překladu a celý jeho průběh |
+| 0:41 - 1:09 | Ověření vzniklých spustitelných souborů |
 
 ### Časový harmonogram videa 2
 
 | Čas | Scénář |
 |---|---|
-| | |
+| 0:00 - 1:10 | představení a ukázka přepínačů |
+| 1:10 - 3:00 | ukázka hry se třemi hráči, farkle, horké kostky |
+| 3:00 - 3:40 | ukázka remízy |
+| 3:40 - 5:05 | testování okrajových případů |
+| 5:05 - 7:30 | testování nevalidních vstupů hráče |
+| 7:30 - 9:05 | průchod jednotkových testů |
+| 9:05 - 9:24 | spuštění jednotkových testů a otestování konce vstupu/souboru |
 
 ---
 

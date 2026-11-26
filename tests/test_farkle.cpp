@@ -130,10 +130,10 @@ TEST_CASE("AIPlayer - vyber kostek a rozhodovani o dalsim hodu", "[ai]") {
     REQUIRE(chosenMixed == std::vector<int>{0, 3});
 
     // 3. Rozhodovani o dalsim hodu
-    // Neni na tabuli (isOnBoard == false) a ma < 500 bodu -> musi hazet dal
+    // Neni ve hre (isOnBoard == false) a ma < 500 bodu -> musi hazet dal
     REQUIRE(cautiousAI.wantsToRollAgain(300, 2));
 
-    // Uz je na tabuli -> zastavi se, pokud ma > bankThreshold nebo < minDiceToReroll
+    // Uz je ve hre -> zastavi se, pokud ma > bankThreshold nebo < minDiceToReroll
     cautiousAI.setOnBoard(true);
     REQUIRE_FALSE(cautiousAI.wantsToRollAgain(450, 4));
     REQUIRE_FALSE(cautiousAI.wantsToRollAgain(200, 3));
