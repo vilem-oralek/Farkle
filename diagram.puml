@@ -1,0 +1,81 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Game {
+  + {static} ON_BOARD_THRESHOLD : int = 500
+  + {static} WINNING_SCORE : int = 10000
+  + {static} DICE_COUNT : int = 6
+  - players : vector<unique_ptr<Player>>
+  - dice : vector<Dice>
+  - rng : mt19937
+  + Game()
+  + Game(seed : unsigned int)
+  + addPlayer(player : unique_ptr<Player>) : void
+  + run() : void
+  - rollUnlockedDice() : void
+  - resetAllDice() : void
+  - countUnlockedDice() : int
+  - getUnlockedValues() : vector<int>
+  - isValidSelection(selectedIndices : vector<int>) : bool
+  - playTurn(player : Player&) : void
+  - printDice() : void
+  - printScoreboard() : void
+  - announceWinner() : void
+}
+
+abstract class Player {
+  + {static} MAX_NAME_LENGTH : size_t = 20
+  - playerName : string
+  - onBoard : bool = false
+  - totalScore : int = 0
+  + Player(name : string)
+  + {abstract} ~Player()
+  + getName() : string
+  + setOnBoard(b : bool) : void
+  + isOnBoard() : bool
+  + addScore(score : int) : void
+  + setTotalScore(score : int) : void
+  + getTotalScore() : int
+  + {abstract} chooseDice(dice : vector<Dice>) : vector<int>
+  + {abstract} wantsToRollAgain(turnScore : int, remainingDiceCount : int) : bool
+}
+
+class HumanPlayer {
+  + HumanPlayer(name : string)
+  + chooseDice(dice : vector<Dice>) : vector<int>
+  + wantsToRollAgain(turnScore : int, remainingDiceCount : int) : bool
+}
+
+class AIPlayer {
+  - bankThreshold : int
+  - minDiceToReroll : int
+  + AIPlayer(name : string, bankThreshold : int = 350, minDiceToReroll : int = 3)
+  + chooseDice(dice : vector<Dice>) : vector<int>
+  + wantsToRollAgain(turnScore : int, remainingDiceCount : int) : bool
+}
+
+class Dice {
+  - value : int
+  - locked : bool = false
+  + Dice()
+  + roll(rng : mt19937&) : void
+  + getValue() : int
+  + setValue(v : int) : void
+  + isLocked() : bool
+  + setLocked(v : bool) : void
+}
+
+class Scorer {
+  + {static} countValues(diceValues : vector<int>) : array<int, 7>
+  + {static} calculateScore(diceValues : vector<int>) : int
+  + {static} hasScoringMove(activeDiceValues : vector<int>) : bool
+}
+
+Player <|-- HumanPlayer
+Player <|-- AIPlayer
+Game "1" *-- "2..*" Player : manages
+Game "1" *-- "6" Dice : owns
+Game ..> Scorer : validates & scores
+AIPlayer ..> Scorer : evaluates moves
+Player ..> Dice : reads
+@enduml

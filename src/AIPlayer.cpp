@@ -24,13 +24,13 @@ std::vector<int> AIPlayer::chooseDice(const std::vector<Dice>& dice) {
         std::cout << "Hráč " << getName() << " vybral všechny dostupné kostky." << std::endl;
         return activeIndices;
     }
-    std::array<int, 7> counts = Scorer::countValues(activeValues);
+    const std::array<int, 7> counts = Scorer::countValues(activeValues);
     std::vector<int> chosenIndices;
 
     std::cout << "Hráč " << getName() << " vybral kostky č.:";
     for (int i = 0; i < dice.size(); i++) {
         if (!dice[i].isLocked()) {
-            int val = dice[i].getValue();
+            const int val = dice[i].getValue();
             if (val == 1 || val == 5 || counts[val] >= 3) {
                 chosenIndices.push_back(i);
                 std::cout << " " << (i + 1);

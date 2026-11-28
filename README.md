@@ -621,8 +621,20 @@ Díky polymorfismu (`Player*`) je vyhodnocení konce hry pro člověka i počít
 
 | Video | Obsah | Odkaz |
 |---|---|---|
-| 1 – překlad programu | příkazy pro překlad, spuštění překladu a celý jeho průběh | _doplnit odkaz_ |
-| 2 – průběh hry a testování | hra, výhra, prohra, hraniční situace a komentář k testování | _doplnit odkaz_ |
+| 1 – překlad programu | příkazy pro překlad, spuštění překladu a celý jeho průběh | [video1.mp4](videos/video1.mp4) |
+| 2 – průběh hry a testování | hra, výhra, prohra, hraniční situace a komentář k testování | [video2.mp4](videos/video2.mp4) |
+
+### GitHub commit
+
+| Hash | Remote odkaz |
+|---|---|
+| a8932ab681fcd3bbd4e47353e0bf63879dcf8344 | https://github.com/vilem-oralek/Farkle/commit/a8932ab681fcd3bbd4e47353e0bf63879dcf8344 |
+
+### GitLab commit
+
+| Hash | Remote odkaz |
+|---|---|
+| a8932ab681fcd3bbd4e47353e0bf63879dcf8344 | https://gitlab.fel.cvut.cz/oralevil/farkle/-/commit/a8932ab681fcd3bbd4e47353e0bf63879dcf8344 |
 
 ### Časový harmonogram videa 1
 
